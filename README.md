@@ -216,7 +216,7 @@ Error: Still can access pages
 
 ## 🙏 **Credits**
 
-- **Developer:** [Your Name]
+- **Developer:** Lutfi, Chandara, Ferrosi, Hermione, and Zhea
 - **Project:** PRCFI Financial Management Dashboard
 - **Year:** 2025
 
