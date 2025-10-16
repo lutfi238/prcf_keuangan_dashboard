@@ -25,8 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user['id_user'];
                 $_SESSION['pending_login'] = true;
                 
-                // Send OTP via email (implement email function)
-                // send_otp_email($user['email'], $otp);
+                // Save OTP untuk ditampilkan di halaman
+                $_SESSION['demo_otp_display'] = $otp;
+                
+                // Email OTP akan diimplementasikan nanti
+                // @send_otp_email($user['email'], $otp);
                 
                 header('Location: verify_otp.php');
                 exit();

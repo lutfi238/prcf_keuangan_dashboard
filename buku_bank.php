@@ -62,15 +62,10 @@ $filter_project = $_GET['project'] ?? '';
 if ($filter_project) {
     $stmt = $conn->prepare("SELECT bb.*, p.nama_proyek FROM buku_bank bb LEFT JOIN proyek p ON bb.kode_projek = p.kode_proyek WHERE bb.kode_projek = ? ORDER BY bb.date DESC, bb.id_bank DESC");
     $stmt->bind_param("s", $filter_project);
-} else {
-    $stmt = $conn->query("SELECT bb.*, p.nama_proyek FROM buku_bank bb LEFT JOIN proyek p ON bb.kode_projek = p.kode_proyek ORDER BY bb.date DESC, bb.id_bank DESC LIMIT 100");
-}
-
-if (isset($stmt) && is_object($stmt)) {
     $stmt->execute();
     $entries = $stmt->get_result();
 } else {
-    $entries = $stmt;
+    $entries = $conn->query("SELECT bb.*, p.nama_proyek FROM buku_bank bb LEFT JOIN proyek p ON bb.kode_projek = p.kode_proyek ORDER BY bb.date DESC, bb.id_bank DESC LIMIT 100");
 }
 
 // Get projects

@@ -10,11 +10,12 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['user_role'] !== 'Project Manage
 $user_name = $_SESSION['user_name'];
 $user_id = $_SESSION['user_id'];
 
-// Get notifications
-$stmt = $conn->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$notifications = $stmt->get_result();
+// Get proposals created by this PM
+$proposals = $conn->query("SELECT p.*, pr.nama_proyek 
+    FROM proposal p 
+    LEFT JOIN proyek pr ON p.kode_proyek = pr.kode_proyek 
+    WHERE p.pemohon = '{$user_name}' 
+    ORDER BY p.created_at DESC");
 ?>
 <!DOCTYPE html>
 <html lang="id">

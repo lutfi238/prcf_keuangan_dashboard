@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($_SESSION['otp']);
             unset($_SESSION['otp_time']);
             unset($_SESSION['pending_login']);
+            unset($_SESSION['demo_otp_display']);
             
             // Redirect based on role
             switch ($user['role']) {
@@ -66,13 +67,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['otp'] = $otp;
         $_SESSION['otp_time'] = time();
         
-        // Send OTP
-        $user_id = $_SESSION['user_id'];
-        $stmt = $conn->prepare("SELECT email FROM user WHERE id_user = ?");
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
-        send_otp_email($user['email'], $otp);
+        // Save OTP untuk ditampilkan
+        $_SESSION['demo_otp_display'] = $otp;
+        
+        // Email OTP akan diimplementasikan nanti
+        // $user_id = $_SESSION['user_id'];
+        // $stmt = $conn->prepare("SELECT email FROM user WHERE id_user = ?");
+        // $stmt->bind_param("i", $user_id);
+        // $stmt->execute();
+        // $user = $stmt->get_result()->fetch_assoc();
+        // @send_otp_email($user['email'], $otp);
         
         $success = 'Kode OTP baru telah dikirim';
     }
@@ -108,6 +112,34 @@ if ($time_left < 0) $time_left = 0;
             </div>
         <?php endif; ?>
 
+        <?php if (isset($_SESSION['demo_otp_display'])): ?>
+            <!-- Tampilkan OTP di halaman -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg shadow-md">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm text-blue-800 font-semibold mb-3">
+                            🔐 Kode OTP Anda
+                        </p>
+                        <div class="bg-white border-2 border-blue-400 rounded-lg p-5 shadow-sm">
+                            <p class="text-xs text-gray-600 mb-2 text-center">Masukkan kode berikut:</p>
+                            <p class="text-5xl font-bold text-blue-600 tracking-widest text-center font-mono">
+                                <?php echo $_SESSION['demo_otp_display']; ?>
+                            </p>
+                        </div>
+                        <p class="mt-3 text-xs text-blue-700 text-center">
+                            <i class="fas fa-clock mr-1"></i> 
+                            Kode berlaku selama 60 detik
+                        </p>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <form method="POST" class="space-y-4">
             <div>
                 <label class="block text-gray-700 text-sm font-medium mb-2">Kode OTP</label>
@@ -124,7 +156,10 @@ if ($time_left < 0) $time_left = 0;
                 class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
                 <i class="fas fa-check-circle mr-2"></i> Verifikasi
             </button>
+        </form>
 
+        <!-- Form terpisah untuk kirim ulang OTP (tidak perlu validasi) -->
+        <form method="POST" class="mt-4">
             <button type="submit" name="resend_otp" id="resendBtn"
                 class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition duration-200 font-medium">
                 <i class="fas fa-redo mr-2"></i> Kirim Ulang Kode

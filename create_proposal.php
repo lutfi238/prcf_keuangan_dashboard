@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_proposal'])) {
     $date = $_POST['date'];
     $pemohon = $_POST['pemohon'];
     $kode_proyek = $_POST['kode_proyek'];
-    $tor = $_POST['tor'];
     
     // Handle file upload
     $file_budget = '';
@@ -28,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_proposal'])) {
         $file_budget = $upload_dir . time() . '_' . $_FILES['file_budget']['name'];
         move_uploaded_file($_FILES['file_budget']['tmp_name'], $file_budget);
     }
+    
+    // TOR diset NULL atau kosong
+    $tor = null;
     
     $stmt = $conn->prepare("INSERT INTO proposal (judul_proposal, pj, date, pemohon, kode_proyek, tor, file_budget, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'submitted')");
     $stmt->bind_param("sssssss", $judul, $pj, $date, $pemohon, $kode_proyek, $tor, $file_budget);
@@ -150,21 +152,9 @@ $projects = $conn->query("SELECT kode_proyek, nama_proyek FROM proyek WHERE stat
                     </div>
                 </div>
 
-                <!-- Terms of Reference -->
-                <div class="space-y-4">
-                    <h3 class="text-lg font-bold text-gray-800 border-b pb-2">II. TERMS OF REFERENCE (TOR)</h3>
-                    
-                    <div>
-                        <label class="block text-gray-700 text-sm font-medium mb-2">Latar Belakang</label>
-                        <textarea name="tor" rows="8" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            placeholder="1. Latar Belakang&#10;2. Tujuan&#10;3. Target/Sasaran&#10;4. Metodologi&#10;5. Jadwal Kegiatan&#10;6. Anggaran"></textarea>
-                    </div>
-                </div>
-
                 <!-- File Upload -->
                 <div class="space-y-4">
-                    <h3 class="text-lg font-bold text-gray-800 border-b pb-2">III. LAMPIRAN</h3>
+                    <h3 class="text-lg font-bold text-gray-800 border-b pb-2">II. LAMPIRAN</h3>
                     
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2">File Budget/RAB</label>
