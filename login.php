@@ -1,6 +1,10 @@
 <?php
 session_start();
 require_once 'config.php';
+require_once 'maintenance_config.php';
+
+// Check maintenance mode
+check_maintenance();
 
 $error = '';
 $success = '';
@@ -25,11 +29,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user['id_user'];
                 $_SESSION['pending_login'] = true;
                 
-                // Save OTP untuk ditampilkan di halaman
-                $_SESSION['demo_otp_display'] = $otp;
-                
-                // Email OTP akan diimplementasikan nanti
-                // @send_otp_email($user['email'], $otp);
+                // Check if user has phone number (no_HP)
+                if (!empty($user['no_HP'])) {
+                    // Send OTP via WhatsApp using no_HP
+                    $wa_sent = send_otp_whatsapp($user['no_HP'], $otp);
+                    
+                    if ($wa_sent) {
+                        $_SESSION['otp_sent_via'] = 'whatsapp';
+                        $_SESSION['otp_phone_masked'] = substr($user['no_HP'], 0, 4) . 'xxx' . substr($user['no_HP'], -3);
+                    } else {
+                        // Fallback to manual display if WhatsApp fails
+                        $_SESSION['demo_otp_display'] = $otp;
+                        $_SESSION['otp_sent_via'] = 'manual';
+                        error_log("⚠️ WhatsApp OTP failed for user {$user['id_user']}, using manual display");
+                    }
+                } else {
+                    // No phone number, use manual display
+                    $_SESSION['demo_otp_display'] = $otp;
+                    $_SESSION['otp_sent_via'] = 'manual';
+                    error_log("⚠️ User {$user['id_user']} has no phone number, using manual display");
+                }
                 
                 header('Location: verify_otp.php');
                 exit();

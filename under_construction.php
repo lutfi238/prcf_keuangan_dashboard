@@ -38,22 +38,59 @@ switch ($user_role) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Under Construction - PRCFI Financial</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #lottie-animation {
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            width: 0%;
+            animation: progress 3s ease-out forwards;
+        }
+        
+        @keyframes progress {
+            to { width: 65%; }
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center py-8">
     <div class="max-w-2xl mx-auto px-4 py-8">
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-center">
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-center fade-in">
                 <div class="inline-block p-4 bg-white rounded-full mb-4">
                     <i class="fas fa-tools text-5xl text-blue-500"></i>
                 </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Under Construction</h1>
+                <h1 class="text-3xl font-bold text-white mb-2">🚧 Under Construction</h1>
                 <p class="text-blue-100">Fitur sedang dalam pengembangan</p>
             </div>
 
+            <!-- Lottie Animation -->
+            <div class="p-6">
+                <div id="lottie-animation"></div>
+            </div>
+
             <!-- Content -->
-            <div class="p-8 text-center">
+            <div class="px-8 pb-8 text-center">
                 <div class="mb-6">
                     <div class="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
                         <i class="fas fa-user-tag mr-2"></i><?php echo $user_role; ?>
@@ -66,20 +103,31 @@ switch ($user_role) {
                     </p>
                 </div>
 
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Progress Pengembangan</span>
+                        <span class="font-semibold text-blue-600">65%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div class="progress-bar h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full"></div>
+                    </div>
+                </div>
+
                 <!-- Status Info -->
                 <div class="bg-gray-50 rounded-lg p-6 mb-6">
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div>
-                            <div class="text-3xl mb-2">🚧</div>
-                            <p class="text-sm text-gray-600">Dalam<br>Pengembangan</p>
+                            <div class="text-3xl mb-2">✅</div>
+                            <p class="text-sm text-gray-600">Planning<br>Selesai</p>
                         </div>
                         <div>
-                            <div class="text-3xl mb-2">⏳</div>
-                            <p class="text-sm text-gray-600">Segera<br>Hadir</p>
+                            <div class="text-3xl mb-2">⚙️</div>
+                            <p class="text-sm text-gray-600">Development<br>Berjalan</p>
                         </div>
                         <div>
-                            <div class="text-3xl mb-2">✨</div>
-                            <p class="text-sm text-gray-600">Fitur<br>Premium</p>
+                            <div class="text-3xl mb-2">🚀</div>
+                            <p class="text-sm text-gray-600">Launch<br>Segera</p>
                         </div>
                     </div>
                 </div>
@@ -149,6 +197,23 @@ switch ($user_role) {
             <p>Login sebagai: <span class="font-medium text-gray-800"><?php echo $user_name; ?></span></p>
         </div>
     </div>
+
+    <script>
+        // Load Lottie animation
+        try {
+            const animation = lottie.loadAnimation({
+                container: document.getElementById('lottie-animation'),
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: 'assets/fixing/Under Construction 1.json'
+            });
+        } catch (error) {
+            console.error('Error loading animation:', error);
+            // Hide animation container if loading fails
+            document.getElementById('lottie-animation').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
 

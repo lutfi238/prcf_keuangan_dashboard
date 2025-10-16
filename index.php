@@ -1,5 +1,9 @@
 <?php
 session_start();
+require_once 'maintenance_config.php';
+
+// Check maintenance mode
+check_maintenance();
 
 // Cek apakah user sudah login
 if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {

@@ -1,6 +1,10 @@
 <?php
 session_start();
 require_once 'config.php';
+require_once 'maintenance_config.php';
+
+// Check maintenance mode
+check_maintenance();
 
 $error = '';
 $success = '';
@@ -41,22 +45,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     } elseif ($password !== $confirm_password) {
         $error = 'Password tidak cocok';
     } else {
-        // Check if email exists
-        $stmt = $conn->prepare("SELECT id_user FROM user WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        if ($stmt->get_result()->num_rows > 0) {
-            $error = 'Email sudah terdaftar';
+        // Validate WhatsApp number dengan detail error
+        $phone_validation = validate_whatsapp_number($phone);
+        if (!$phone_validation['valid']) {
+            $error = $phone_validation['error'];
         } else {
-            // Insert user
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO user (nama, email, password_hash, no_HP, role) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $username, $email, $password_hash, $phone, $role);
-            
-            if ($stmt->execute()) {
-                $success = 'Akun berhasil dibuat!';
+            // Check if email exists
+            $stmt = $conn->prepare("SELECT id_user FROM user WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows > 0) {
+                $error = 'Email sudah terdaftar';
             } else {
-                $error = 'Gagal membuat akun';
+                // Format phone number (will be used for WhatsApp OTP)
+                $phone_formatted = format_phone_number($phone);
+                
+                // Insert user
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $conn->prepare("INSERT INTO user (nama, email, password_hash, no_HP, role) VALUES (?, ?, ?, ?, ?)");
+                $stmt->bind_param("sssss", $username, $email, $password_hash, $phone_formatted, $role);
+                
+                if ($stmt->execute()) {
+                    $success = 'Akun berhasil dibuat! Silakan login.';
+                } else {
+                    $error = 'Gagal membuat akun: ' . $conn->error;
+                }
             }
         }
     }
@@ -125,11 +138,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 </div>
 
                 <div>
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Nomor Handphone</label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">
+                        Nomor WhatsApp
+                        <span class="text-blue-500 text-xs font-semibold">(untuk OTP verifikasi)</span>
+                    </label>
                     <input type="tel" name="phone" id="phone" required 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        placeholder="08xxxxxxxxxx">
-                    <p id="phoneStatus" class="text-sm mt-1"></p>
+                        placeholder="Contoh: 081234567890"
+                        maxlength="13"
+                        title="Masukkan nomor WhatsApp aktif Indonesia (08xx atau 628xx)">
+                    <div class="mt-1 text-xs">
+                        <p class="text-gray-500">
+                            💬 <strong>OTP akan dikirim ke nomor ini saat login</strong>
+                        </p>
+                        <p class="text-gray-500 mt-1">
+                            📱 Format: <code class="bg-gray-100 px-1 rounded">081234567890</code> atau <code class="bg-gray-100 px-1 rounded">6281234567890</code>
+                        </p>
+                        <p class="text-gray-500 mt-1">
+                            ✅ Provider: Telkomsel, Indosat, XL, Three, Axis, Smartfren
+                        </p>
+                    </div>
+                    <p id="phoneStatus" class="text-sm mt-2 font-medium"></p>
                 </div>
 
                 <div>
@@ -192,27 +221,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
         });
 
-        // Check phone availability
-        document.getElementById('phone').addEventListener('blur', function() {
+        // Real-time WhatsApp number validation
+        document.getElementById('phone').addEventListener('input', function() {
             const phone = this.value;
-            if (phone) {
-                fetch('register.php', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: 'check_phone=1&phone=' + encodeURIComponent(phone)
-                })
-                .then(r => r.json())
-                .then(data => {
-                    const status = document.getElementById('phoneStatus');
-                    if (data.available) {
-                        status.textContent = 'Number available to use';
-                        status.className = 'text-green-600 text-sm mt-1';
-                    } else {
-                        status.textContent = 'Number already use';
-                        status.className = 'text-red-600 text-sm mt-1';
-                    }
-                });
+            const status = document.getElementById('phoneStatus');
+            
+            if (!phone) {
+                status.textContent = '';
+                return;
             }
+            
+            // Remove non-numeric characters for validation
+            const phoneClean = phone.replace(/[^0-9]/g, '');
+            
+            // Check length
+            if (phoneClean.length < 10) {
+                status.innerHTML = '<span class="text-orange-600">⚠️ Minimal 10 digit</span>';
+                return;
+            }
+            
+            if (phoneClean.length > 13) {
+                status.innerHTML = '<span class="text-red-600">❌ Maksimal 13 digit</span>';
+                return;
+            }
+            
+            // Check if starts with valid prefix
+            if (!phoneClean.match(/^(0|62)/)) {
+                status.innerHTML = '<span class="text-red-600">❌ Harus dimulai dengan 0 atau 62</span>';
+                return;
+            }
+            
+            // Check if mobile number (08xx or 628xx)
+            if (phoneClean.startsWith('0')) {
+                if (!phoneClean.startsWith('08')) {
+                    status.innerHTML = '<span class="text-red-600">❌ Nomor HP harus 08xx</span>';
+                    return;
+                }
+                if (phoneClean.length < 11 || phoneClean.length > 13) {
+                    status.innerHTML = '<span class="text-orange-600">⚠️ Nomor 08xx harus 11-13 digit</span>';
+                    return;
+                }
+            } else if (phoneClean.startsWith('62')) {
+                if (!phoneClean.startsWith('628')) {
+                    status.innerHTML = '<span class="text-red-600">❌ Nomor internasional harus 628xx</span>';
+                    return;
+                }
+                if (phoneClean.length < 12 || phoneClean.length > 14) {
+                    status.innerHTML = '<span class="text-orange-600">⚠️ Nomor 628xx harus 12-14 digit</span>';
+                    return;
+                }
+            }
+            
+            // Validate operator prefix
+            const operatorPrefix = phoneClean.startsWith('0') 
+                ? phoneClean.substring(2, 4) 
+                : phoneClean.substring(3, 5);
+            
+            const validOperators = ['11','12','13','14','15','16','17','18','19', // Telkomsel
+                                   '21','22','23', // Indosat
+                                   '31','32','33','38', // XL
+                                   '55','56','57','58','59', // IM3
+                                   '77','78', // XL
+                                   '81','82','83','84','85','88', // Smartfren, Axis
+                                   '95','96','97','98','99']; // Three
+            
+            if (!validOperators.includes(operatorPrefix)) {
+                status.innerHTML = '<span class="text-red-600">❌ Operator tidak valid (gunakan Telkomsel, Indosat, XL, Three, Axis, Smartfren)</span>';
+                return;
+            }
+            
+            // If all validations pass, check availability
+            fetch('register.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'check_phone=1&phone=' + encodeURIComponent(phone)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.available) {
+                    status.innerHTML = '<span class="text-green-600">✅ Nomor valid & tersedia</span>';
+                } else {
+                    status.innerHTML = '<span class="text-red-600">❌ Nomor sudah terdaftar</span>';
+                }
+            });
         });
 
         // Password validation

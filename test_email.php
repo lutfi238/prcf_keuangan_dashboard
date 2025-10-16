@@ -9,7 +9,15 @@
 <body class="bg-gray-50 min-h-screen flex items-center justify-center">
     <div class="max-w-2xl w-full mx-auto p-8">
         <div class="bg-white rounded-lg shadow-lg p-8">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">🧪 Test Email OTP System</h1>
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">🧪 Test Email OTP System (Brevo)</h1>
+            <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <p class="text-sm text-blue-800">
+                    <strong>📧 Using Brevo SMTP</strong> - 300 emails/day free!
+                </p>
+                <p class="text-xs text-blue-600 mt-1">
+                    Make sure you have setup Brevo credentials in config.php
+                </p>
+            </div>
             
             <?php
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -38,9 +46,10 @@
                 
                 // Check cURL
                 if (extension_loaded('curl')) {
-                    echo '<li class="text-green-600">✅ cURL: Enabled</li>';
+                    echo '<li class="text-green-600">✅ cURL: Enabled (Required for Brevo!)</li>';
                 } else {
-                    echo '<li class="text-orange-600">⚠️ cURL: Disabled (optional)</li>';
+                    echo '<li class="text-red-600">❌ cURL: Disabled</li>';
+                    echo '<li class="text-xs text-red-500 ml-4">→ Enable cURL in php.ini and restart Apache</li>';
                 }
                 
                 // Check sockets
@@ -76,11 +85,22 @@
                     echo '<div class="mt-4 p-3 bg-red-50 border border-red-200 rounded">';
                     echo '<p class="text-sm text-red-800"><strong>Kemungkinan Masalah:</strong></p>';
                     echo '<ul class="text-xs text-red-600 mt-2 space-y-1 ml-4">';
+                    echo '<li>• <strong>cURL extension belum enabled</strong> (paling sering!)</li>';
                     echo '<li>• OpenSSL extension belum enabled</li>';
+                    echo '<li>• Apache belum di-restart setelah enable extension</li>';
+                    echo '<li>• Brevo SMTP credentials salah (cek config.php)</li>';
                     echo '<li>• Firewall/Antivirus memblokir port 587</li>';
-                    echo '<li>• App Password salah atau expired</li>';
                     echo '<li>• Tidak ada koneksi internet</li>';
                     echo '</ul>';
+                    echo '<div class="mt-3 p-2 bg-yellow-50 border border-yellow-300 rounded">';
+                    echo '<p class="text-xs text-yellow-800"><strong>Quick Fix:</strong></p>';
+                    echo '<ol class="text-xs text-yellow-700 ml-4 mt-1 list-decimal">';
+                    echo '<li>Restart Apache di XAMPP</li>';
+                    echo '<li>Run fix_brevo_connection.bat as Admin</li>';
+                    echo '<li>Restart Apache lagi</li>';
+                    echo '<li>Test ulang!</li>';
+                    echo '</ol>';
+                    echo '</div>';
                     echo '</div>';
                 }
                 
@@ -123,14 +143,23 @@
             </form>
             
             <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
-                <p class="text-sm text-blue-800 font-semibold mb-2">💡 Troubleshooting Steps:</p>
+                <p class="text-sm text-blue-800 font-semibold mb-2">💡 Troubleshooting Steps (Brevo):</p>
                 <ol class="text-xs text-blue-700 space-y-1 ml-4 list-decimal">
-                    <li>Run <code class="bg-blue-100 px-1 rounded">enable_email.bat</code> as Administrator</li>
-                    <li>Restart Apache di XAMPP Control Panel</li>
+                    <li><strong>RESTART APACHE</strong> di XAMPP Control Panel (paling penting!)</li>
+                    <li>Run <code class="bg-blue-100 px-1 rounded">fix_brevo_connection.bat</code> as Administrator</li>
+                    <li>Cek config.php - pastikan SMTP_USER & SMTP_PASS sudah benar</li>
                     <li>Disable Antivirus sementara untuk test</li>
                     <li>Pastikan internet connection aktif</li>
-                    <li>Cek Gmail App Password masih valid</li>
                 </ol>
+                <div class="mt-3 p-2 bg-green-50 border border-green-300 rounded">
+                    <p class="text-xs text-green-800"><strong>✅ Setup Brevo:</strong></p>
+                    <p class="text-xs text-green-700 mt-1">
+                        1. Daftar: <a href="https://app.brevo.com/account/register" target="_blank" class="underline">app.brevo.com</a><br>
+                        2. Get SMTP Key di dashboard<br>
+                        3. Update config.php dengan credentials<br>
+                        4. Baca: SETUP_BREVO.md untuk panduan lengkap
+                    </p>
+                </div>
             </div>
             
             <div class="mt-6 text-center">

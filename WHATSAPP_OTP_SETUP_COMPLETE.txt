@@ -1,0 +1,252 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   📱 WHATSAPP OTP SETUP - COMPLETE! ✅                       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Status: ✅ CODE IMPLEMENTATION DONE                                        ║
+║          ⏳ WAITING FOR USER TO COMPLETE SETUP                              ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  STEP-BY-STEP PETUNJUK UNTUK KAMU:                                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ✅ STEP 1: UPDATE DATABASE (WAJIB!)                                        ║
+║  ────────────────────────────────────────────────────────                   ║
+║                                                                              ║
+║  1. Buka phpMyAdmin yang sudah saya buka untuk kamu:                        ║
+║     → Window "localhost / 127.0.0.1 / prcf_keua..." sudah terbuka          ║
+║                                                                              ║
+║  2. Login ke phpMyAdmin (jika belum):                                       ║
+║     Username: root                                                          ║
+║     Password: (kosongkan)                                                   ║
+║                                                                              ║
+║  3. Pilih database: prcf_keuangan                                           ║
+║                                                                              ║
+║  4. Klik tab "SQL"                                                          ║
+║                                                                              ║
+║  5. Copy & Paste SQL ini:                                                   ║
+║                                                                              ║
+║     USE prcf_keuangan;                                                      ║
+║                                                                              ║
+║     ALTER TABLE user                                                        ║
+║     ADD COLUMN whatsapp VARCHAR(20) NULL AFTER email,                       ║
+║     ADD INDEX idx_whatsapp (whatsapp);                                      ║
+║                                                                              ║
+║     UPDATE user SET whatsapp = '6281234567890'                              ║
+║     WHERE username = 'pm_test';                                             ║
+║                                                                              ║
+║  6. Klik "Go" untuk eksekusi                                                ║
+║                                                                              ║
+║  7. Verify dengan SQL ini:                                                  ║
+║                                                                              ║
+║     SELECT id_user, username, email, whatsapp, role FROM user;             ║
+║                                                                              ║
+║  8. Pastikan kolom "whatsapp" muncul! ✅                                    ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  ✅ STEP 2: SETUP FONNTE (DAFTAR & GET TOKEN)                               ║
+║  ────────────────────────────────────────────────────────                   ║
+║                                                                              ║
+║  1. Buka: https://fonnte.com                                                ║
+║                                                                              ║
+║  2. Klik "Daftar Gratis" / "Sign Up"                                        ║
+║                                                                              ║
+║  3. Isi form registrasi:                                                    ║
+║     Email: (email kamu)                                                     ║
+║     Password: (password kamu)                                               ║
+║                                                                              ║
+║  4. Verifikasi email (cek inbox)                                            ║
+║                                                                              ║
+║  5. Login ke dashboard: https://app.fonnte.com                              ║
+║                                                                              ║
+║  6. Connect WhatsApp Device:                                                ║
+║     → Klik "Connect Device"                                                 ║
+║     → Scan QR Code pakai WhatsApp di HP kamu                                ║
+║     → Tunggu sampai status "Connected ✅"                                   ║
+║                                                                              ║
+║  7. Dapatkan API Token:                                                     ║
+║     → Klik "API" atau "Settings"                                            ║
+║     → Copy token (format: xxxxx-xxxxx-xxxxx)                                ║
+║                                                                              ║
+║  8. Save token ini! (akan dipakai di step berikutnya)                       ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  ✅ STEP 3: UPDATE CONFIG.PHP (PASTE TOKEN)                                 ║
+║  ────────────────────────────────────────────────────────                   ║
+║                                                                              ║
+║  1. Buka file: c:\xampp\htdocs\prcf_keuangan_dashboard\config.php          ║
+║     (file sudah terbuka di Cursor)                                          ║
+║                                                                              ║
+║  2. Cari baris ini (sekitar line 23):                                       ║
+║                                                                              ║
+║     define('FONNTE_TOKEN', 'YOUR_FONNTE_TOKEN_HERE');                       ║
+║                                                                              ║
+║  3. Ganti dengan token dari Fonnte:                                         ║
+║                                                                              ║
+║     define('FONNTE_TOKEN', 'xxxxx-xxxxx-xxxxx-xxxxx');                      ║
+║                            ^^^^^^^^^^^^^^^^^^^^^^^^^                         ║
+║                            paste token kamu di sini                          ║
+║                                                                              ║
+║  4. Save file (Ctrl+S)                                                      ║
+║                                                                              ║
+║  5. Restart Apache:                                                         ║
+║     → Buka XAMPP Control Panel                                              ║
+║     → Stop Apache                                                           ║
+║     → Start Apache                                                          ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  ✅ STEP 4: TEST WHATSAPP OTP                                               ║
+║  ────────────────────────────────────────────────────────                   ║
+║                                                                              ║
+║  TEST 1: Test Page (Quick Test)                                             ║
+║  ────────────────────────────────                                           ║
+║  1. Buka: http://localhost/prcf_keuangan_dashboard/test_whatsapp_otp.php   ║
+║                                                                              ║
+║  2. Masukkan nomor WhatsApp KAMU:                                           ║
+║     Contoh: 081234567890                                                    ║
+║                                                                              ║
+║  3. Klik "Kirim Test WhatsApp OTP"                                          ║
+║                                                                              ║
+║  4. CEK WHATSAPP KAMU! 💬                                                   ║
+║     → Harus ada pesan masuk dengan kode OTP                                 ║
+║                                                                              ║
+║  5. Jika berhasil: ✅ Setup sukses!                                         ║
+║     Jika gagal: ❌ Cek troubleshooting di bawah                             ║
+║                                                                              ║
+║  TEST 2: Full Flow (Register → Login → OTP)                                 ║
+║  ────────────────────────────────────────────                               ║
+║  1. Buka: http://localhost/prcf_keuangan_dashboard/register.php            ║
+║                                                                              ║
+║  2. Isi form registrasi:                                                    ║
+║     Username: test_wa                                                       ║
+║     Email: test@example.com                                                 ║
+║     Password: password123                                                   ║
+║     Nomor Handphone: 081234567890                                           ║
+║     Nomor WhatsApp: 081234567890  ← NOMOR KAMU!                             ║
+║     Role: Project Manager                                                   ║
+║                                                                              ║
+║  3. Klik "Buat Akun"                                                        ║
+║                                                                              ║
+║  4. Login dengan akun baru:                                                 ║
+║     Email: test@example.com                                                 ║
+║     Password: password123                                                   ║
+║                                                                              ║
+║  5. Klik "Login"                                                            ║
+║                                                                              ║
+║  6. CEK WHATSAPP KAMU! 💬                                                   ║
+║     → Harus dapat kode OTP 6 digit                                          ║
+║                                                                              ║
+║  7. Copy OTP dari WhatsApp                                                  ║
+║                                                                              ║
+║  8. Paste di form verify_otp.php                                            ║
+║                                                                              ║
+║  9. Klik "Verifikasi"                                                       ║
+║                                                                              ║
+║  10. ✅ Berhasil masuk dashboard!                                           ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  🔧 TROUBLESHOOTING                                                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Problem 1: Token tidak configured                                          ║
+║  ──────────────────────────────────                                         ║
+║  Error: "⚠️ Fonnte token not configured"                                   ║
+║                                                                              ║
+║  Solution:                                                                  ║
+║  1. Cek config.php                                                          ║
+║  2. Pastikan FONNTE_TOKEN sudah diupdate                                    ║
+║  3. Tidak ada extra space atau typo                                         ║
+║  4. Restart Apache                                                          ║
+║                                                                              ║
+║  ───────────────────────────────────────────────────────                    ║
+║  Problem 2: WhatsApp tidak terkirim                                         ║
+║  ──────────────────────────────────                                         ║
+║  Error: "❌ Failed to send WhatsApp OTP"                                    ║
+║                                                                              ║
+║  Solution:                                                                  ║
+║  1. Cek device di Fonnte dashboard:                                         ║
+║     → https://app.fonnte.com                                                ║
+║     → Status harus "Connected ✅"                                           ║
+║     → Jika disconnected, scan QR ulang                                      ║
+║                                                                              ║
+║  2. Cek nomor WhatsApp:                                                     ║
+║     → Format valid: 08xxxxxxxxxx                                            ║
+║     → Nomor aktif & terdaftar WhatsApp                                      ║
+║                                                                              ║
+║  3. Cek quota Fonnte:                                                       ║
+║     → Dashboard → Lihat sisa quota                                          ║
+║     → Free: 100 messages/month                                              ║
+║                                                                              ║
+║  4. Cek error log:                                                          ║
+║     → C:\xampp\apache\logs\error.log                                        ║
+║     → Cari: "📱 WhatsApp OTP Debug"                                        ║
+║                                                                              ║
+║  ───────────────────────────────────────────────────────                    ║
+║  Problem 3: Manual OTP muncul terus                                         ║
+║  ──────────────────────────────────                                         ║
+║  Symptom: "⚠️ Mode fallback - WhatsApp tidak tersedia"                     ║
+║                                                                              ║
+║  Solution:                                                                  ║
+║  1. Cek database - user punya nomor WhatsApp?                               ║
+║     SQL: SELECT whatsapp FROM user WHERE username = 'test_wa';              ║
+║                                                                              ║
+║  2. Jika NULL, update:                                                      ║
+║     SQL: UPDATE user SET whatsapp = '628xxxxxxxxx'                          ║
+║          WHERE username = 'test_wa';                                        ║
+║                                                                              ║
+║  3. Logout dan login ulang                                                  ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  📚 DOCUMENTATION                                                           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  📄 SETUP_FONNTE.md              - Panduan setup lengkap                    ║
+║  📄 add_whatsapp_column.sql       - SQL untuk update database               ║
+║  🧪 test_whatsapp_otp.php         - Test page WhatsApp OTP                  ║
+║  📄 EMAIL_OTP_GUIDE.md            - Alternative email OTP                   ║
+║  📄 OTP_STATUS.txt                - OTP status overview                     ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  ✅ WHAT'S BEEN DONE?                                                       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ✅ config.php - Fonnte API integration added                               ║
+║  ✅ send_otp_whatsapp() - Function implemented                              ║
+║  ✅ format_phone_number() - Auto format 08xx to 628xx                       ║
+║  ✅ is_valid_phone_number() - Phone validation                              ║
+║  ✅ register.php - WhatsApp field added                                     ║
+║  ✅ login.php - Send OTP via WhatsApp                                       ║
+║  ✅ verify_otp.php - WhatsApp OTP UI & resend logic                         ║
+║  ✅ test_whatsapp_otp.php - Test page created                               ║
+║  ✅ SETUP_FONNTE.md - Complete setup guide                                  ║
+║  ✅ add_whatsapp_column.sql - Database migration                            ║
+║  ✅ Auto-fallback to manual OTP if WhatsApp fails                           ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  🎯 NEXT STEPS FOR YOU                                                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  1. ⏳ Update database (run SQL di phpMyAdmin)                              ║
+║  2. ⏳ Daftar akun Fonnte & get API token                                   ║
+║  3. ⏳ Connect WhatsApp device di Fonnte                                    ║
+║  4. ⏳ Update FONNTE_TOKEN di config.php                                    ║
+║  5. ⏳ Restart Apache                                                       ║
+║  6. ⏳ Test di test_whatsapp_otp.php                                        ║
+║  7. ⏳ Test full flow: Register → Login → OTP                               ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  💡 TIPS                                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  • FREE Fonnte: 100 messages/month (cukup untuk demo)                       ║
+║  • Auto-fallback: Jika WhatsApp gagal, OTP tampil manual                    ║
+║  • Format nomor: System auto-convert 08xx ke 628xx                          ║
+║  • Test dulu: Pakai test_whatsapp_otp.php sebelum test full flow            ║
+║  • Monitoring: Dashboard Fonnte tampilkan sent count & quota                ║
+║  • Security: JANGAN commit API token ke Git!                                ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎊 SETUP CODE COMPLETE! Tinggal kamu ikuti Step 1-4 di atas! 💪
+
+Last Updated: October 16, 2025
+
